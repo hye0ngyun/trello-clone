@@ -1,4 +1,5 @@
 "use client";
+import DraggableCard from "@/lib/components/draggableCard";
 import { toDoState } from "@/lib/store/drag-drop";
 import { useState } from "react";
 import {
@@ -31,17 +32,7 @@ export default function DragDrop() {
             {(magic) => (
               <Board ref={magic.innerRef} {...magic.droppableProps}>
                 {toDo.map((todo, index) => (
-                  <Draggable draggableId={todo} index={index} key={todo}>
-                    {(magic) => (
-                      <Card
-                        ref={magic.innerRef}
-                        {...magic.dragHandleProps}
-                        {...magic.draggableProps}
-                      >
-                        {todo}
-                      </Card>
-                    )}
-                  </Draggable>
+                  <DraggableCard index={index} todo={todo} key={todo} />
                 ))}
                 {magic.placeholder}
               </Board>
@@ -71,9 +62,4 @@ const Board = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 10px;
-`;
-const Card = styled.li`
-  background-color: ${(props) => props.theme.cardBgColor};
-  padding: 10px;
-  border-radius: 5px;
 `;
