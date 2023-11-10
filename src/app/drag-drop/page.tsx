@@ -1,43 +1,56 @@
 "use client";
-import DraggableCard from "@/lib/components/draggableCard";
+import Board from "@/lib/components/Board";
 import { toDoState } from "@/lib/store/drag-drop";
-import { useState } from "react";
 import {
   DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
+  DropResult
 } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
 export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
-  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
-    if (!destination) return;
-    setToDo((oldToDo) => {
-      const temp = [...oldToDo];
-      // 1. 드래그 시작한 값 삭제
-      temp.splice(source.index, 1);
-      // 2. 드래그 끝나는 위치에 시작한 값 추가
-      temp.splice(destination?.index, 0, draggableId);
-      return temp;
-    });
+  const onDragEnd = (info: DropResult) => {
+    if (!info.destination) return;
+    const { draggableId, destination, source } = info;
+
+    if (destination.droppableId === source.droppableId) {
+      // 같은 보드에서 이동이 됐다면
+      setToDo((allBoards) => {
+        const temp = [...allBoards[source.droppableId]];
+        // 1. 드래그 시작한 값 삭제
+        temp.splice(source.index, 1);
+        // 2. 드래그 끝나는 위치에 시작한 값 추가
+        temp.splice(destination?.index, 0, draggableId);
+        return {
+          ...allBoards,
+          [source.droppableId]: temp,
+        };
+      });
+    } else {
+      // 다른 보드로 이동이 됐다면
+      setToDo((allBoards) => {
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        // 1. 드래그 시작한 값 삭제
+        sourceBoard.splice(source.index, 1);
+        // 2. 드래그 끝나는 위치에 시작한 값 추가
+        destinationBoard.splice(destination?.index, 0, draggableId);
+        return {
+          ...allBoards,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        };
+      });
+    }
   };
   return (
     <Wrapper>
       <DragDropContext onDragEnd={onDragEnd}>
         <Boards>
-          <Droppable droppableId="first">
-            {(magic) => (
-              <Board ref={magic.innerRef} {...magic.droppableProps}>
-                {toDo.map((todo, index) => (
-                  <DraggableCard index={index} todo={todo} key={todo} />
-                ))}
-                {magic.placeholder}
-              </Board>
-            )}
-          </Droppable>
+          {Object.keys(toDo).map((key) => (
+            <Board todos={toDo[key]} droppableId={key} key={key} />
+          ))}
         </Boards>
       </DragDropContext>
     </Wrapper>
@@ -52,14 +65,7 @@ const Wrapper = styled.div`
   width: 100%;
   min-height: 100vh;
 `;
-const Boards = styled.div``;
-const Board = styled.ul`
-  background-color: ${(props) => props.theme.boardBgColor};
-  padding: 20px;
-  border-radius: 5px;
-
-  width: 500px;
+const Boards = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 10px;
 `;

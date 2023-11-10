@@ -7,8 +7,6 @@ interface IDraggableCard {
   index: number;
 }
 function DraggableCard({ todo, index }: IDraggableCard) {
-  console.log(todo);
-
   return (
     <Draggable draggableId={todo} index={index}>
       {(magic) => (
