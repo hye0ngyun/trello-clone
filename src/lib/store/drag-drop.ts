@@ -11,3 +11,7 @@ export const toDoState = atom<ITodoState>({
     done: ["f"],
   },
 });
+export const draggingBoardState = atom({
+  key: "draggingBoard",
+  default: "all",
+});

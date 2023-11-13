@@ -1,15 +1,18 @@
 "use client";
 import Board from "@/lib/components/Board";
-import { toDoState } from "@/lib/store/drag-drop";
+import { draggingBoardState, toDoState } from "@/lib/store/drag-drop";
 import {
   DragDropContext,
-  DropResult
+  Draggable,
+  DropResult,
+  Droppable,
 } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
 export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
+  const [draggingBoard, setdraggingBoard] = useRecoilState(draggingBoardState);
   const onDragEnd = (info: DropResult) => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
@@ -44,14 +47,38 @@ export default function DragDrop() {
       });
     }
   };
+  const onDragStart = (info: any) => {
+    setdraggingBoard(info.source.droppableId);
+  };
   return (
     <Wrapper>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Boards>
-          {Object.keys(toDo).map((key) => (
-            <Board todos={toDo[key]} droppableId={key} key={key} />
-          ))}
-        </Boards>
+      <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+        <Droppable
+          direction="horizontal"
+          droppableId="all"
+          isDropDisabled={draggingBoard !== "all"}
+        >
+          {(magic) => (
+            <Boards ref={magic.innerRef} {...magic.droppableProps}>
+              {Object.keys(toDo).map((key, index) => (
+                <Draggable
+                  draggableId={`board-${key}`}
+                  index={index}
+                  key={`board-${key}`}
+                >
+                  {(magic) => (
+                    <Board
+                      draggableProvider={magic}
+                      todos={toDo[key]}
+                      droppableId={key}
+                    />
+                  )}
+                </Draggable>
+              ))}
+              {magic.placeholder}
+            </Boards>
+          )}
+        </Droppable>
       </DragDropContext>
     </Wrapper>
   );
