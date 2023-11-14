@@ -3,6 +3,7 @@ import Board from "@/lib/components/Board";
 import { draggingBoardState, toDoState } from "@/lib/store/drag-drop";
 import {
   DragDropContext,
+  DragStart,
   Draggable,
   DropResult,
   Droppable,
@@ -16,7 +17,21 @@ export default function DragDrop() {
   const onDragEnd = (info: DropResult) => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
-
+    // 보드 욺기는 경우
+    if (source.droppableId === "all") {
+      const arr = Object.keys(toDo);
+      arr.splice(source.index, 1);
+      arr.splice(destination.index, 0, draggableId.replace("board-", ""));
+      setToDo((prev) => {
+        const temp: { [key: string]: string[] } = {};
+        for (let i = 0; i < arr.length; i++) {
+          temp[arr[i]] = prev[arr[i]];
+        }
+        return temp;
+      });
+      return;
+    }
+    // 보드 내의 아이템 욺기는 경우
     if (destination.droppableId === source.droppableId) {
       // 같은 보드에서 이동이 됐다면
       setToDo((allBoards) => {
@@ -47,7 +62,7 @@ export default function DragDrop() {
       });
     }
   };
-  const onDragStart = (info: any) => {
+  const onDragStart = (info: DragStart) => {
     setdraggingBoard(info.source.droppableId);
   };
   return (
