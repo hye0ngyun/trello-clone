@@ -1,7 +1,6 @@
 "use client";
 import Board from "@/lib/components/Board";
 import { draggingBoardState, toDoState } from "@/lib/store/drag-drop";
-import { useState } from "react";
 import {
   DragDropContext,
   DragStart,
@@ -15,7 +14,6 @@ import styled from "styled-components";
 export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
   const [draggingBoard, setdraggingBoard] = useRecoilState(draggingBoardState);
-  const [inputTodo, setInputTodo] = useState("");
   const onDragEnd = (info: DropResult) => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
@@ -39,9 +37,9 @@ export default function DragDrop() {
       setToDo((allBoards) => {
         const temp = [...allBoards[source.droppableId]];
         // 1. 드래그 시작한 값 삭제
-        const sourceValue = temp.splice(source.index, 1)[0];
+        temp.splice(source.index, 1);
         // 2. 드래그 끝나는 위치에 시작한 값 추가
-        temp.splice(destination?.index, 0, sourceValue);
+        temp.splice(destination?.index, 0, draggableId);
         return {
           ...allBoards,
           [source.droppableId]: temp,
@@ -53,9 +51,9 @@ export default function DragDrop() {
         const sourceBoard = [...allBoards[source.droppableId]];
         const destinationBoard = [...allBoards[destination.droppableId]];
         // 1. 드래그 시작한 값 삭제
-        const sourceValue = sourceBoard.splice(source.index, 1)[0];
+        sourceBoard.splice(source.index, 1);
         // 2. 드래그 끝나는 위치에 시작한 값 추가
-        destinationBoard.splice(destination?.index, 0, sourceValue);
+        destinationBoard.splice(destination?.index, 0, draggableId);
         return {
           ...allBoards,
           [source.droppableId]: sourceBoard,
@@ -67,83 +65,49 @@ export default function DragDrop() {
   const onDragStart = (info: DragStart) => {
     setdraggingBoard(info.source.droppableId);
   };
-  const onChangeInput = (e: React.FormEvent<HTMLInputElement>) => {
-    setInputTodo(e.currentTarget.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!inputTodo) return;
-    setToDo((prev) => {
-      const temp = { ...prev };
-      temp["todo"] = [...temp["todo"], inputTodo];
-      return temp;
-    });
-    setInputTodo("");
-  };
   return (
-    <PageWrapper>
-      <form onSubmit={onSubmit}>
-        <AddTodoInput
-          placeholder="input todo and press enter!"
-          value={inputTodo}
-          onChange={onChangeInput}
-        />
-      </form>
-      <Wrapper>
-        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-          <Droppable
-            direction="horizontal"
-            droppableId="all"
-            isDropDisabled={draggingBoard !== "all"}
-          >
-            {(magic) => (
-              <Boards ref={magic.innerRef} {...magic.droppableProps}>
-                {Object.keys(toDo).map((key, index) => (
-                  <Draggable
-                    draggableId={`board-${key}`}
-                    index={index}
-                    key={`board-${key}`}
-                  >
-                    {(magic) => (
-                      <Board
-                        draggableProvider={magic}
-                        todos={toDo[key]}
-                        droppableId={key}
-                      />
-                    )}
-                  </Draggable>
-                ))}
-                {magic.placeholder}
-              </Boards>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </Wrapper>
-    </PageWrapper>
+    <Wrapper>
+      <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+        <Droppable
+          direction="horizontal"
+          droppableId="all"
+          isDropDisabled={draggingBoard !== "all"}
+        >
+          {(magic) => (
+            <Boards ref={magic.innerRef} {...magic.droppableProps}>
+              {Object.keys(toDo).map((key, index) => (
+                <Draggable
+                  draggableId={`board-${key}`}
+                  index={index}
+                  key={`board-${key}`}
+                >
+                  {(magic) => (
+                    <Board
+                      draggableProvider={magic}
+                      todos={toDo[key]}
+                      droppableId={key}
+                    />
+                  )}
+                </Draggable>
+              ))}
+              {magic.placeholder}
+            </Boards>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </Wrapper>
   );
 }
 
-const PageWrapper = styled.div`
-  min-height: 100vh;
-  background-color: ${(props) => props.theme.bgColor};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 100px;
-  gap: 50px;
-`;
 const Wrapper = styled.div`
+  background-color: ${(props) => props.theme.bgColor};
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 100vh;
 `;
 const Boards = styled.div`
   display: flex;
   gap: 10px;
-`;
-const AddTodoInput = styled.input`
-  border: unset;
-  border-radius: 5px;
-  padding: 10px;
 `;

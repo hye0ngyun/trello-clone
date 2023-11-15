@@ -8,7 +8,7 @@ interface IDraggableCard {
 }
 function DraggableCard({ todo, index }: IDraggableCard) {
   return (
-    <Draggable draggableId={todo} index={index}>
+    <Draggable draggableId={`${index}-${todo}`} index={index}>
       {(magic) => (
         <Card
           ref={magic.innerRef}

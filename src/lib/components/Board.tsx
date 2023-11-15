@@ -3,7 +3,7 @@ import { DraggableProvided, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { draggingBoardState } from '../store/drag-drop';
+import { draggingBoardState } from "../store/drag-drop";
 
 interface IDraggableCard {
   todos: string[];
@@ -25,7 +25,7 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
         {(magic) => (
           <BoardWrapper ref={magic.innerRef} {...magic.droppableProps}>
             {todos.map((todo, index) => (
-              <DraggableCard index={index} todo={todo} key={todo} />
+              <DraggableCard index={index} todo={todo} key={`${index}-${todo}`} />
             ))}
             {magic.placeholder}
           </BoardWrapper>
