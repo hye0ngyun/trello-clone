@@ -104,7 +104,7 @@ export default function DragDrop() {
                     index={index}
                     key={`board-${key}`}
                   >
-                    {(magic) => (
+                    {(magic, snapshot) => (
                       <Board
                         draggableProvider={magic}
                         todos={toDo[key]}
@@ -125,7 +125,7 @@ export default function DragDrop() {
 
 const PageWrapper = styled.div`
   min-height: 100vh;
-  background-color: ${(props) => props.theme.bgColor};
+  background-color: ${(props) => "#B0A695"};
   display: flex;
   flex-direction: column;
   align-items: center;

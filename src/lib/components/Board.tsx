@@ -1,6 +1,6 @@
 import React from "react";
 import { DraggableProvided, Droppable } from "react-beautiful-dnd";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import DraggableCard from "./DraggableCard";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { draggingBoardState } from "../store/drag-drop";
@@ -22,10 +22,20 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
         droppableId={droppableId}
         isDropDisabled={draggingBoard === "all"}
       >
-        {(magic) => (
-          <BoardWrapper ref={magic.innerRef} {...magic.droppableProps}>
+        {(magic, snapshot) => (
+          <BoardWrapper
+            isDraggingOver={snapshot.isDraggingOver}
+            draggingFromThisWith={Boolean(snapshot.draggingFromThisWith)}
+            ref={magic.innerRef}
+            {...magic.droppableProps}
+          >
             {todos.map((todo, index) => (
-              <DraggableCard index={index} todo={todo} key={`${index}-${todo}`} droppableId={droppableId} />
+              <DraggableCard
+                index={index}
+                todo={todo}
+                key={`${droppableId}-${index}-${todo}`}
+                droppableId={droppableId}
+              />
             ))}
             {magic.placeholder}
           </BoardWrapper>
@@ -37,8 +47,17 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
 
 export default React.memo(Board);
 
-const BoardWrapper = styled.ul`
-  background-color: ${(props) => props.theme.boardBgColor};
+interface IBoardWrapper {
+  isDraggingOver: boolean;
+  draggingFromThisWith: boolean;
+}
+const BoardWrapper = styled.ul<IBoardWrapper>`
+  background-color: ${(props) =>
+    props.isDraggingOver
+      ? "#D0BFFF"
+      : props.draggingFromThisWith
+      ? "#DFCCFB"
+      : "#FFF8C9"};
   padding: 20px;
   border-radius: 5px;
 
@@ -46,6 +65,8 @@ const BoardWrapper = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: 0.15s;
+  /* ${(props) => props.isDraggingOver && css``} */
 `;
 const Wrapper = styled.div`
   display: flex;

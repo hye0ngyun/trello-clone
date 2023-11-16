@@ -22,9 +22,10 @@ function DraggableCard({ todo, index, droppableId }: IDraggableCard) {
     });
   };
   return (
-    <Draggable draggableId={`${index}-${todo}`} index={index}>
-      {(magic) => (
+    <Draggable draggableId={`${droppableId}-${index}-${todo}`} index={index}>
+      {(magic, snapshot) => (
         <Card
+          isDragging={snapshot.isDragging}
           ref={magic.innerRef}
           {...magic.dragHandleProps}
           {...magic.draggableProps}
@@ -41,8 +42,9 @@ function DraggableCard({ todo, index, droppableId }: IDraggableCard) {
 
 export default React.memo(DraggableCard);
 
-const Card = styled.li`
-  background-color: ${(props) => props.theme.cardBgColor};
+const Card = styled.li<{ isDragging: boolean }>`
+  background-color: ${(props) =>
+    props.isDragging ? "#BEADFA" : props.theme.cardBgColor};
   padding: 10px;
   border-radius: 5px;
 
