@@ -25,7 +25,7 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
         {(magic) => (
           <BoardWrapper ref={magic.innerRef} {...magic.droppableProps}>
             {todos.map((todo, index) => (
-              <DraggableCard index={index} todo={todo} key={`${index}-${todo}`} />
+              <DraggableCard index={index} todo={todo} key={`${index}-${todo}`} droppableId={droppableId} />
             ))}
             {magic.placeholder}
           </BoardWrapper>
