@@ -1,5 +1,6 @@
 "use client";
 import Board from "@/lib/components/Board";
+import Modal from "@/lib/components/Modal";
 import { draggingBoardState, toDoState } from "@/lib/store/drag-drop";
 import {
   DragDropContext,
@@ -14,7 +15,7 @@ import styled from "styled-components";
 export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
   const [draggingBoard, setdraggingBoard] = useRecoilState(draggingBoardState);
-  const onDragEnd = (info: DropResult) => {
+  const onDragEnd = (info: DropResult): void => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
     // 보드 욺기는 경우
@@ -62,11 +63,15 @@ export default function DragDrop() {
       });
     }
   };
-  const onDragStart = (info: DragStart) => {
+  const onDragStart = (info: DragStart): void => {
     setdraggingBoard(info.source.droppableId);
   };
   return (
     <Wrapper>
+      <Modal>
+        <Modal.Title>title</Modal.Title>
+        <Modal.Content>content</Modal.Content>
+      </Modal>
       <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <Droppable
           direction="horizontal"

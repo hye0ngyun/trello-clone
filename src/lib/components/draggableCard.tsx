@@ -11,7 +11,7 @@ interface IDraggableCard {
 }
 function DraggableCard({ todo, index, droppableId }: IDraggableCard) {
   const [toDo, setToDo] = useRecoilState(toDoState);
-  const onClickDelete = (targetIndex: number) => {
+  const onClickDelete = (targetIndex: number): void => {
     setToDo((prev) => {
       return {
         ...prev,

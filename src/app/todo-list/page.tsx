@@ -16,7 +16,7 @@ export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
   const [draggingBoard, setdraggingBoard] = useRecoilState(draggingBoardState);
   const [inputTodo, setInputTodo] = useState("");
-  const onDragEnd = (info: DropResult) => {
+  const onDragEnd = (info: DropResult): void => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
     // 보드 욺기는 경우
@@ -64,13 +64,13 @@ export default function DragDrop() {
       });
     }
   };
-  const onDragStart = (info: DragStart) => {
+  const onDragStart = (info: DragStart): void => {
     setdraggingBoard(info.source.droppableId);
   };
-  const onChangeInput = (e: React.FormEvent<HTMLInputElement>) => {
+  const onChangeInput = (e: React.FormEvent<HTMLInputElement>): void => {
     setInputTodo(e.currentTarget.value);
   };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!inputTodo) return;
     setToDo((prev) => {
