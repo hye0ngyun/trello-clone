@@ -1,14 +1,18 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 
+export interface ITodo {
+  id: number;
+  text: string;
+}
 interface ITodoState {
-  [key: string]: string[];
+  [key: string]: ITodo[];
 }
 export const toDoState = atom<ITodoState>({
   key: "toDos",
   default: {
-    todo: ["a", "d", "e"],
-    doing: ["b", "c"],
-    done: ["f"],
+    // todo: [],
+    // doing: [],
+    // done: [],
   },
 });
 export const draggingBoardState = atom({

@@ -1,23 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { DraggableProvided, Droppable } from "react-beautiful-dnd";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled, { css } from "styled-components";
+import { ITodo, draggingBoardState, toDoState } from "../store/drag-drop";
 import DraggableCard from "./DraggableCard";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { draggingBoardState } from "../store/drag-drop";
 
 interface IDraggableCard {
-  todos: string[];
+  todos: ITodo[];
   droppableId: string;
   draggableProvider: DraggableProvided;
 }
 function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
   const draggingBoard = useRecoilValue(draggingBoardState);
+  const setToDo = useSetRecoilState(toDoState);
+  const [inputTodo, setInputTodo] = useState("");
+
+  const onChangeInput = (e: React.FormEvent<HTMLInputElement>): void => {
+    setInputTodo(e.currentTarget.value);
+  };
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    if (!inputTodo) return;
+    setToDo((prev) => {
+      const temp = { ...prev };
+      const newTodo = { id: Date.now(), text: inputTodo };
+      temp[droppableId] = [...temp[droppableId], newTodo];
+      return temp;
+    });
+    setInputTodo("");
+  };
   return (
     <Wrapper
       ref={draggableProvider.innerRef}
       {...draggableProvider.draggableProps}
     >
       <h2 {...draggableProvider.dragHandleProps}>{droppableId}</h2>
+      <form onSubmit={onSubmit}>
+        <AddTodoInput
+          placeholder={`input ${droppableId} and press enter!`}
+          value={inputTodo}
+          onChange={onChangeInput}
+        />
+      </form>
       <Droppable
         droppableId={droppableId}
         isDropDisabled={draggingBoard === "all"}
@@ -33,7 +57,7 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
               <DraggableCard
                 index={index}
                 todo={todo}
-                key={`${droppableId}-${index}-${todo}`}
+                key={`${droppableId}-${index}-${todo.id}`}
                 droppableId={droppableId}
               />
             ))}
@@ -73,4 +97,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 5px;
+`;
+
+const AddTodoInput = styled.input`
+  border: unset;
+  border-radius: 5px;
+  padding: 10px;
 `;

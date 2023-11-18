@@ -1,7 +1,7 @@
 "use client";
 import Board from "@/lib/components/Board";
-import { draggingBoardState, toDoState } from "@/lib/store/drag-drop";
-import { useState } from "react";
+import { ITodo, draggingBoardState, toDoState } from "@/lib/store/drag-drop";
+import { useState, useEffect } from "react";
 import {
   DragDropContext,
   DragStart,
@@ -15,7 +15,6 @@ import styled from "styled-components";
 export default function DragDrop() {
   const [toDo, setToDo] = useRecoilState(toDoState);
   const [draggingBoard, setdraggingBoard] = useRecoilState(draggingBoardState);
-  const [inputTodo, setInputTodo] = useState("");
   const onDragEnd = (info: DropResult): void => {
     if (!info.destination) return;
     const { draggableId, destination, source } = info;
@@ -25,7 +24,7 @@ export default function DragDrop() {
       arr.splice(source.index, 1);
       arr.splice(destination.index, 0, draggableId.replace("board-", ""));
       setToDo((prev) => {
-        const temp: { [key: string]: string[] } = {};
+        const temp: { [key: string]: ITodo[] } = {};
         for (let i = 0; i < arr.length; i++) {
           temp[arr[i]] = prev[arr[i]];
         }
@@ -67,28 +66,25 @@ export default function DragDrop() {
   const onDragStart = (info: DragStart): void => {
     setdraggingBoard(info.source.droppableId);
   };
-  const onChangeInput = (e: React.FormEvent<HTMLInputElement>): void => {
-    setInputTodo(e.currentTarget.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    if (!inputTodo) return;
-    setToDo((prev) => {
-      const temp = { ...prev };
-      temp["todo"] = [...temp["todo"], inputTodo];
-      return temp;
-    });
-    setInputTodo("");
-  };
+
+  useEffect(() => {
+    if (localStorage.getItem("todos") !== null) {
+      setToDo(JSON.parse(localStorage.getItem("todos") as string));
+    } else {
+      setToDo({
+        todo: [],
+        doing: [],
+        done: [],
+      });
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(toDo));
+    return () => {};
+  }, [toDo]);
+
   return (
     <PageWrapper>
-      <form onSubmit={onSubmit}>
-        <AddTodoInput
-          placeholder="input todo and press enter!"
-          value={inputTodo}
-          onChange={onChangeInput}
-        />
-      </form>
       <Wrapper>
         <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           <Droppable
@@ -141,9 +137,4 @@ const Wrapper = styled.div`
 const Boards = styled.div`
   display: flex;
   gap: 10px;
-`;
-const AddTodoInput = styled.input`
-  border: unset;
-  border-radius: 5px;
-  padding: 10px;
 `;

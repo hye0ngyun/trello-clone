@@ -1,28 +1,28 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { toDoState } from "../store/drag-drop";
+import { ITodo, toDoState } from "../store/drag-drop";
 
 interface IDraggableCard {
-  todo: string;
+  todo: ITodo;
   index: number;
   droppableId: string;
 }
 function DraggableCard({ todo, index, droppableId }: IDraggableCard) {
-  const [toDo, setToDo] = useRecoilState(toDoState);
-  const onClickDelete = (targetIndex: number): void => {
+  const setToDo = useSetRecoilState(toDoState);
+  const onClickDelete = (targetId: number): void => {
     setToDo((prev) => {
       return {
         ...prev,
         [droppableId]: prev[droppableId].filter(
-          (todo, index) => index !== targetIndex
+          (todo, index) => todo.id !== targetId
         ),
       };
     });
   };
   return (
-    <Draggable draggableId={`${droppableId}-${index}-${todo}`} index={index}>
+    <Draggable draggableId={`${droppableId}-${index}-${todo.id}`} index={index}>
       {(magic, snapshot) => (
         <Card
           isDragging={snapshot.isDragging}
@@ -30,8 +30,8 @@ function DraggableCard({ todo, index, droppableId }: IDraggableCard) {
           {...magic.dragHandleProps}
           {...magic.draggableProps}
         >
-          <span>{todo}</span>
-          <span className="delete-btn" onClick={() => onClickDelete(index)}>
+          <span>{todo.text}</span>
+          <span className="delete-btn" onClick={() => onClickDelete(todo.id)}>
             x
           </span>
         </Card>
