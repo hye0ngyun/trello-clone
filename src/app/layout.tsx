@@ -1,12 +1,12 @@
 "use client";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
-import { defaultTheme } from '@/lib/theme';
+import { defaultTheme } from "@/lib/theme";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <ThemeProvider theme={defaultTheme}>
         <RecoilRoot>
-          <body className={inter.className}>{children}</body>
+          <body>{children}</body>
         </RecoilRoot>
       </ThemeProvider>
     </html>
