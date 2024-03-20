@@ -68,14 +68,30 @@ export default function DragDrop() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("todos") !== null) {
-      setToDo(JSON.parse(localStorage.getItem("todos") as string));
-    } else {
-      setToDo({
+    try {
+      const localTodos = localStorage.getItem("todos");
+
+      if (
+        localStorage.getItem("todos") !== null &&
+        Object.prototype.toString.call(JSON.parse(localTodos as string)) ===
+          "[object Object]"
+      ) {
+        setToDo(JSON.parse(localTodos as string));
+      } else {
+        setToDo({
+          todo: [],
+          doing: [],
+          done: [],
+        });
+      }
+    } catch (error) {
+      const tempToDo = {
         todo: [],
         doing: [],
         done: [],
-      });
+      };
+      setToDo(tempToDo);
+      localStorage.setItem("todos", JSON.stringify(tempToDo));
     }
   }, []);
   useEffect(() => {

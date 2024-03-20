@@ -68,9 +68,17 @@ export default function DragDrop() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("todos") !== null) {
-      setToDo(JSON.parse(localStorage.getItem("todos") as string));
-    } else {
+    try {
+      if (localStorage.getItem("todos") !== null) {
+        setToDo(JSON.parse(localStorage.getItem("todos") as string));
+      } else {
+        setToDo({
+          todo: [],
+          doing: [],
+          done: [],
+        });
+      }
+    } catch (error) {
       setToDo({
         todo: [],
         doing: [],

@@ -6,6 +6,8 @@
 
 https://hye0ngyun.github.io/trello-clone/
 
+`npm run dev`로 개발 서버 실행 시 `/trello-clone` 경로로 이동해야 함
+
 ## Getting Started
 
 ```bash

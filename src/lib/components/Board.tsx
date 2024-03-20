@@ -3,7 +3,7 @@ import { DraggableProvided, Droppable } from "react-beautiful-dnd";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled, { css } from "styled-components";
 import { ITodo, draggingBoardState, toDoState } from "../store/drag-drop";
-import DraggableCard from "@/lib/components/DraggableCard";
+import DraggableCard from "@/lib/components/draggableCard";
 
 interface IDraggableCard {
   todos: ITodo[];
