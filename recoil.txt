@@ -1,5 +1,5 @@
 1:HL["/trello-clone/_next/static/css/a511eee8ce9e4964.css","style",{"crossOrigin":""}]
-0:["eS8WcVBUbv5I2sZsdsGpx",[[["",{"children":["recoil",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],"$L2",[[["$","link","0",{"rel":"stylesheet","href":"/trello-clone/_next/static/css/a511eee8ce9e4964.css","precedence":"next","crossOrigin":""}]],"$L3"]]]]
+0:["5ObIJjYIplyw2yiJjO_C9",[[["",{"children":["recoil",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],"$L2",[[["$","link","0",{"rel":"stylesheet","href":"/trello-clone/_next/static/css/a511eee8ce9e4964.css","precedence":"next","crossOrigin":""}]],"$L3"]]]]
 4:I[8401,["691","static/chunks/f4e5f4e1-05bae03786d627e9.js","946","static/chunks/946-b9b78bce707c5aef.js","185","static/chunks/app/layout-214dee1d06ae6caf.js"],""]
 5:I[6954,[],""]
 6:I[988,["601","static/chunks/app/error-af92a6c81eb55342.js"],""]
