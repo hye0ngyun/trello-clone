@@ -153,8 +153,8 @@ export default function DragDrop() {
                   )}
                 </Draggable>
               ))}
-              <MakeBoard />
               {magic.placeholder}
+              <MakeBoard />
             </Stack>
           )}
         </Droppable>
