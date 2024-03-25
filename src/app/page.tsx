@@ -1,6 +1,8 @@
 "use client";
 import Board from "@/lib/components/Board";
 import { ITodo, draggingBoardState, toDoState } from "@/lib/store/drag-drop";
+import { Add, Close, SettingsBackupRestore } from "@mui/icons-material";
+import { Box, Button, Container, Stack, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   DragDropContext,
@@ -99,58 +101,131 @@ export default function DragDrop() {
     return () => {};
   }, [toDo]);
 
+  const onReset = () => {
+    setToDo({
+      todo: [],
+      doing: [],
+      done: [],
+    });
+  };
+
   return (
-    <PageWrapper>
-      <Wrapper>
-        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-          <Droppable
-            direction="horizontal"
-            droppableId="all"
-            isDropDisabled={draggingBoard !== "all"}
-          >
-            {(magic) => (
-              <Boards ref={magic.innerRef} {...magic.droppableProps}>
-                {Object.keys(toDo).map((key, index) => (
-                  <Draggable
-                    draggableId={`board-${key}`}
-                    index={index}
-                    key={`board-${key}`}
-                  >
-                    {(magic, snapshot) => (
-                      <Board
-                        draggableProvider={magic}
-                        todos={toDo[key]}
-                        droppableId={key}
-                      />
-                    )}
-                  </Draggable>
-                ))}
-                {magic.placeholder}
-              </Boards>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </Wrapper>
-    </PageWrapper>
+    <Stack
+      sx={{ flexGrow: 1, minHeight: "100dvh" }}
+      overflow={"scroll"}
+      bgcolor={"#E1AFD1"}
+      borderRadius={2}
+    >
+      <Button onClick={onReset}>
+        <SettingsBackupRestore />
+      </Button>
+      <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+        <Droppable
+          direction="horizontal"
+          droppableId="all"
+          isDropDisabled={draggingBoard !== "all"}
+        >
+          {(magic) => (
+            <Stack
+              alignItems={"flex-start"}
+              direction={"row"}
+              gap={1}
+              p={2}
+              sx={{ flexGrow: 1 }}
+              overflow={"scroll"}
+              bgcolor={"#E1AFD1"}
+              borderRadius={2}
+              ref={magic.innerRef}
+              {...magic.droppableProps}
+            >
+              {Object.keys(toDo).map((key, index) => (
+                <Draggable
+                  draggableId={`board-${key}`}
+                  index={index}
+                  key={`board-${key}`}
+                >
+                  {(magic) => (
+                    <Board
+                      draggableProvider={magic}
+                      todos={toDo[key]}
+                      droppableId={key}
+                    />
+                  )}
+                </Draggable>
+              ))}
+              <MakeBoard />
+              {magic.placeholder}
+            </Stack>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </Stack>
   );
 }
 
-const PageWrapper = styled.div`
-  min-height: 100vh;
-  background-color: ${(props) => "#B0A695"};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 100px;
-  gap: 50px;
-`;
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-`;
-const Boards = styled.div`
-  display: flex;
-  gap: 10px;
-`;
+function MakeBoard() {
+  const [toDo, setToDo] = useRecoilState(toDoState);
+
+  const [name, setName] = useState("");
+  const [isAdd, setIsAdd] = useState(false);
+  const onChangeInput = (
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
+    setName(e.currentTarget.value);
+  };
+  const onHandleAdd = () => {
+    setName("");
+    setIsAdd((prev) => !prev);
+  };
+
+  // 보드의 카드 추가
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    if (!name) return;
+    setToDo((prev) => {
+      const temp = { ...prev };
+      temp[name] = [];
+      return temp;
+    });
+    setName("");
+    onHandleAdd();
+  };
+  return (
+    <Box
+      borderRadius={2}
+      bgcolor={"rgb(241, 242, 244, 0.7 )"}
+      flexShrink={0}
+      width={272}
+    >
+      {isAdd ? (
+        <form onSubmit={onSubmit}>
+          <Stack p={1} gap={1}>
+            <TextField
+              placeholder={`Enter a title for this card…`}
+              value={name}
+              onChange={onChangeInput}
+              autoFocus
+            />
+            <Stack direction={"row"} gap={1} className="">
+              <Button sx={{ flexGrow: 1 }} variant="contained" type="submit">
+                add card
+              </Button>
+              <Button onClick={onHandleAdd}>
+                <Close />
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      ) : (
+        <Button
+          sx={{ display: "flex", alignItems: "center", gap: "5px" }}
+          onClick={onHandleAdd}
+          fullWidth
+        >
+          <Add />
+          <span>add a board</span>
+        </Button>
+      )}
+    </Box>
+  );
+}

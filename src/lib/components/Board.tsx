@@ -4,6 +4,8 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled, { css } from "styled-components";
 import { ITodo, draggingBoardState, toDoState } from "../store/drag-drop";
 import DraggableCard from "@/lib/components/draggableCard";
+import { Box, Button, Stack, TextField } from "@mui/material";
+import { Add, Close } from "@mui/icons-material";
 
 interface IDraggableCard {
   todos: ITodo[];
@@ -17,7 +19,9 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
   const [boardName, setBoardName] = useState(droppableId);
   const [isEditBoardName, setIsEditBoardName] = useState(false);
 
-  const onChangeInput = (e: React.FormEvent<HTMLInputElement>): void => {
+  const onChangeInput = (
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     setInputTodo(e.currentTarget.value);
   };
   // 보드의 카드 추가
@@ -31,6 +35,7 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
       return temp;
     });
     setInputTodo("");
+    onHandleAdd();
   };
 
   // 보드 이름 수정
@@ -46,14 +51,35 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
     });
     setInputTodo("");
   };
+
+  const [isAdd, setIsAdd] = useState(false);
+  const onHandleAdd = () => {
+    setInputTodo("");
+    setIsAdd((prev) => !prev);
+  };
+
   return (
-    <Wrapper
+    <Stack
+      flexShrink={0}
+      width={272}
+      gap={1}
+      p={1}
+      borderRadius={2}
+      bgcolor={"rgb(241, 242, 244)"}
       ref={draggableProvider.innerRef}
       {...draggableProvider.draggableProps}
     >
-      <form onSubmit={onSubmitBoardName}>
+      {/* 제목 */}
+      <form
+        onSubmit={onSubmitBoardName}
+        style={{
+          height: 40,
+          padding: 10,
+        }}
+      >
         {isEditBoardName ? (
-          <input
+          <TextField
+            size="small"
             type="text"
             value={boardName}
             onChange={(e) => setBoardName(e.target.value)}
@@ -73,21 +99,16 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
           </h2>
         )}
       </form>
-      <form onSubmit={onSubmit}>
-        <AddTodoInput
-          placeholder={`input ${droppableId} and press enter!`}
-          value={inputTodo}
-          onChange={onChangeInput}
-        />
-      </form>
+      {/* 리스트 */}
       <Droppable
         droppableId={droppableId}
         isDropDisabled={draggingBoard === "all"}
       >
         {(magic, snapshot) => (
-          <BoardWrapper
-            isDraggingOver={snapshot.isDraggingOver}
-            draggingFromThisWith={Boolean(snapshot.draggingFromThisWith)}
+          <Stack
+            gap={1}
+            // isDraggingOver={snapshot.isDraggingOver}
+            // draggingFromThisWith={Boolean(snapshot.draggingFromThisWith)}
             ref={magic.innerRef}
             {...magic.droppableProps}
           >
@@ -100,10 +121,40 @@ function Board({ todos, droppableId, draggableProvider }: IDraggableCard) {
               />
             ))}
             {magic.placeholder}
-          </BoardWrapper>
+          </Stack>
         )}
       </Droppable>
-    </Wrapper>
+      {/* 입력 */}
+
+      {isAdd ? (
+        <form onSubmit={onSubmit}>
+          <Stack gap={1}>
+            <TextField
+              placeholder={`Enter a title for this card…`}
+              value={inputTodo}
+              onChange={onChangeInput}
+              autoFocus
+            />
+            <Stack direction={"row"} gap={1} className="">
+              <Button sx={{ flexGrow: 1 }} variant="contained" type="submit">
+                add card
+              </Button>
+              <Button onClick={onHandleAdd}>
+                <Close />
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      ) : (
+        <Button
+          sx={{ display: "flex", alignItems: "center", gap: "5px" }}
+          onClick={onHandleAdd}
+        >
+          <Add />
+          <span>add a card</span>
+        </Button>
+      )}
+    </Stack>
   );
 }
 
